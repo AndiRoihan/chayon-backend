@@ -2,7 +2,15 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ArtikelController;
+use App\Http\Controllers\Api\CourseController;
 
+Route::apiResource('course', CourseController::class);
+
+
+Route::get('/artikel', [ArtikelController::class, 'index']);
+Route::get('/artikel/{id}', [ArtikelController::class, 'show']);
+Route::apiResource('artikel', ArtikelController::class);
 /*
 |--------------------------------------------------------------------------
 | API Routes
