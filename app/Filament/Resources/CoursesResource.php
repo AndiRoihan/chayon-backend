@@ -29,7 +29,7 @@ class CoursesResource extends Resource
             ->schema([
                 Card::make()
                     ->schema([
-                        TextInput::make('tilte')->required(),
+                        TextInput::make('title')->required(),
                         Textarea::make('description')->required(),
                         TextInput::make('cta_link')->required(),
                     ])

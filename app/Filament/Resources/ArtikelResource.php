@@ -7,12 +7,16 @@ use Filament\Tables;
 use App\Models\Artikel;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ArtikelResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -30,26 +34,52 @@ class ArtikelResource extends Resource
             ->schema([
                 Card::make()
                     ->schema([
-                        TextInput::make('judul')->required(),
-                        Textarea::make('konten')->required(),
-                        DatePicker::make('tanggal_publikasi')->required(),
-                        TextInput::make('status')->required(),
-                        Textarea::make('seo_metadata')->required(),    
+                        TextInput::make('slug')->required(),
+                        TextInput::make('title')->required(),
+                        Textarea::make('description')->required(),
+                        TextInput::make('category')->required(),
+                        DatePicker::make('date')->required(),
+                        FileUpload::make('image')
+                            ->directory('artikel-thumbnails')
+                            ->image()
+                            ->disk('public'),
+
+                        // Tambahkan konten sebagai Repeater
+                        Repeater::make('content')
+                            ->schema([
+                                TextInput::make('title')->label('Konten Judul'),
+                                Textarea::make('paragraphs')->label('Paragraf'),
+                                TextInput::make('bulletPoints')->label('Poin (pisahkan dengan koma)'),
+                            ])
+                            ->columnSpanFull(),
+
+                        // Tambahkan artikel terkait
+                        Repeater::make('related_articles')
+                            ->schema([
+                                TextInput::make('title')->label('Judul Artikel Terkait'),
+                            ])
+                            ->columnSpanFull(),
                     ])
                     ->columns(2),
             ]);
     }
 
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('judul')->sortable()->searchable(),
-                TextColumn::make('konten')->sortable()->searchable(),
-                TextColumn::make('tanggal_publikasi')->sortable()->searchable(),
-                TextColumn::make('status')->sortable()->searchable(),
-                TextColumn::make('seo_metadata')->sortable()->searchable(),
-                
+                TextColumn::make('slug')->sortable()->searchable(),
+                TextColumn::make('title')->sortable()->searchable(),
+                TextColumn::make('description')->limit(50)->wrap(),
+                TextColumn::make('category')->sortable()->searchable(),
+                TextColumn::make('date')->sortable()->searchable(),
+                ImageColumn::make('image')->disk('public')->width(50)->height(50),
+                TextColumn::make('content')
+                    ->label('Konten')
+                    ->formatStateUsing(fn($state) => Str::limit(json_encode($state), 50))
+                    ->wrap(),
+
             ])
             ->filters([
                 //
