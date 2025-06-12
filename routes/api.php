@@ -7,10 +7,12 @@ use App\Http\Controllers\Api\CourseController;
 
 Route::apiResource('course', CourseController::class);
 
-
 Route::get('/artikel', [ArtikelController::class, 'index']);
+Route::get('/artikel/slug/{slug}', [ArtikelController::class, 'findBySlug']); // Add this new route
 Route::get('/artikel/{id}', [ArtikelController::class, 'show']);
-Route::apiResource('artikel', ArtikelController::class);
+Route::get('/panduan/{category}', [ArtikelController::class, 'getByCategory']);
+Route::apiResource('artikel', controller: ArtikelController::class);
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
