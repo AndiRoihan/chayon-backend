@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Category;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Artikel;
@@ -37,7 +38,9 @@ class ArtikelResource extends Resource
                         TextInput::make('slug')->required(),
                         TextInput::make('title')->required(),
                         Textarea::make('description')->required(),
-                        TextInput::make('category')->required(),
+                        Forms\Components\Select::make('category')
+                            ->options(collect(Category::cases())->pluck('value', 'value'))
+                            ->required(),
                         DatePicker::make('date')->required(),
                         FileUpload::make('image')
                             ->directory('artikel-thumbnails')
@@ -75,10 +78,6 @@ class ArtikelResource extends Resource
                 TextColumn::make('category')->sortable()->searchable(),
                 TextColumn::make('date')->sortable()->searchable(),
                 ImageColumn::make('image')->disk('public')->width(50)->height(50),
-                TextColumn::make('content')
-                    ->label('Konten')
-                    ->formatStateUsing(fn($state) => Str::limit(json_encode($state), 50))
-                    ->wrap(),
 
             ])
             ->filters([

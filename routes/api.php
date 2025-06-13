@@ -3,14 +3,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ArtikelController;
-use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\CoursesController;
 
-Route::apiResource('course', CourseController::class);
-
+Route::apiResource('course', CoursesController::class);
 
 Route::get('/artikel', [ArtikelController::class, 'index']);
+Route::get('/artikel/slug/{slug}', [ArtikelController::class, 'findBySlug']); // Add this new route
 Route::get('/artikel/{id}', [ArtikelController::class, 'show']);
-Route::apiResource('artikel', ArtikelController::class);
+Route::get('/panduan/{category}', [ArtikelController::class, 'getByCategory']);
+Route::apiResource('artikel', controller: ArtikelController::class);
+
 /*
 |--------------------------------------------------------------------------
 | API Routes

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Courses;
 use Illuminate\Http\Request;
 
-class CourseController extends Controller
+class CoursesController extends Controller
 {
     public function index()
     {

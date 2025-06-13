@@ -6,20 +6,14 @@ use App\Enums\Category;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Artikel extends Model
+class Courses extends Model
 {
     use HasFactory;
-    
     protected $fillable = [
-        'slug',
-        'title',
-        'description',
+        'title', 
         'category',
-        'date',
-        'image',
-        'content',
-        'related_articles'
-    ];
+        'description', 
+        'cta_link'];
 
     protected $casts = [
         'content' => 'array',
