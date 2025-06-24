@@ -3,37 +3,61 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CourseResource;
 use App\Models\Courses;
 use Illuminate\Http\Request;
 
 class CoursesController extends Controller
 {
-    public function index()
+    /**
+     * Tampilkan daftar course, diurutkan hanya berdasarkan updated_at.
+     */
+    public function index(Request $request)
     {
-        return Courses::all();
+        // Ambil parameter order, default 'desc'
+        $sortOrder = strtolower($request->query('order', 'desc'));
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+
+        // Hanya sorting by updated_at
+        $courses = Courses::orderBy('updated_at', $sortOrder)->get();
+
+        return CourseResource::collection($courses);
     }
 
-    public function store(Request $request)
+    /**
+     * Tampilkan detail satu course.
+     */
+    public function show(Courses $course)
     {
-        $course = Courses::create($request->all());
-        return response()->json($course, 201);
+        return new CourseResource($course);
     }
 
-    public function show($id)
+    /**
+     * Tampilkan detail berdasarkan slug.
+     */
+    public function findBySlug($slug)
     {
-        return Courses::findOrFail($id);
+        $course = Courses::where('course_slug', $slug)->firstOrFail();
+        return new CourseResource($course);
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Tampilkan daftar course per-kategori, diurutkan hanya berdasarkan updated_at.
+     */
+    public function getByCategory(Request $request, $category)
     {
-        $course = Courses::findOrFail($id);
-        $course->update($request->all());
-        return response()->json($course);
-    }
+        $sortOrder = strtolower($request->query('order', 'desc'));
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
 
-    public function destroy($id)
-    {
-        Courses::destroy($id);
-        return response()->json(null, 204);
+        // Filter berdasarkan kolom course_category sesuai model
+        $courses = Courses::where('course_category', $category)
+            ->orderBy('updated_at', $sortOrder)
+            ->get();
+
+        return CourseResource::collection($courses);
     }
 }
